@@ -2,6 +2,16 @@
 
 #include <stdint.h>
 
+#if defined(_WIN32)
+  #if defined(AMOTION_BUILD)
+    #define AMOTION_API __declspec(dllexport)
+  #else
+    #define AMOTION_API __declspec(dllimport)
+  #endif
+#else
+  #define AMOTION_API __attribute__((visibility("default")))
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -115,25 +125,25 @@ typedef struct am_event {
     am_rect rect;
 } am_event;
 
-am_world_config am_default_world_config(void);
+AMOTION_API am_world_config am_default_world_config(void);
 
-am_world* am_world_create(const am_world_config* config);
-void am_world_destroy(am_world* world);
+AMOTION_API am_world* am_world_create(const am_world_config* config);
+AMOTION_API void am_world_destroy(am_world* world);
 
-int am_world_upsert_body(am_world* world, const am_body_desc* desc);
-int am_world_remove_body(am_world* world, uint64_t body_id);
+AMOTION_API int am_world_upsert_body(am_world* world, const am_body_desc* desc);
+AMOTION_API int am_world_remove_body(am_world* world, uint64_t body_id);
 
-int am_world_upsert_surface(am_world* world, const am_surface_desc* desc);
-int am_world_remove_surface(am_world* world, uint64_t surface_id);
+AMOTION_API int am_world_upsert_surface(am_world* world, const am_surface_desc* desc);
+AMOTION_API int am_world_remove_surface(am_world* world, uint64_t surface_id);
 
-int am_world_pointer(am_world* world, uint64_t body_id, const am_pointer_event* event);
-void am_world_step(am_world* world, double now_ms);
+AMOTION_API int am_world_pointer(am_world* world, uint64_t body_id, const am_pointer_event* event);
+AMOTION_API void am_world_step(am_world* world, double now_ms);
 
-int am_world_get_frame(const am_world* world, uint64_t body_id, am_body_frame* out_frame);
-int am_world_poll_event(am_world* world, am_event* out_event);
+AMOTION_API int am_world_get_frame(const am_world* world, uint64_t body_id, am_body_frame* out_frame);
+AMOTION_API int am_world_poll_event(am_world* world, am_event* out_event);
 
-void am_world_set_policy(am_world* world, am_motion_policy policy);
-am_motion_policy am_world_get_policy(const am_world* world);
+AMOTION_API void am_world_set_policy(am_world* world, am_motion_policy policy);
+AMOTION_API am_motion_policy am_world_get_policy(const am_world* world);
 
 #ifdef __cplusplus
 }
