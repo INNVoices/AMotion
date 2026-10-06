@@ -20,3 +20,26 @@ jobs:
         run: cmake --build build --config Release
       - name: Test
         run: ctest --test-dir build -C Release --output-on-failure
+
+
+  node-adapter:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2022]
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: bindings/node
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install --ignore-scripts
+      - name: Build Node adapter
+        run: npm run build
+      - name: Smoke load
+        run: node -e "const {World}=require('./'); const w=new World(); w.upsertBody({id:1,x:0,y:0,width:10,height:10}); w.step(16); if(!w.frame(1)) process.exit(1);"
