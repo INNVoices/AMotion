@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(amotion LANGUAGES CXX)
 
 option(AMOTION_BUILD_EXAMPLES "Build AMotion examples" ON)
+option(AMOTION_BUILD_TESTS "Build AMotion tests" ON)
 
 add_library(amotion SHARED
     src/amotion.cpp
@@ -24,4 +25,12 @@ endif()
 if (AMOTION_BUILD_EXAMPLES)
     add_executable(amotion_demo examples/demo.cpp)
     target_link_libraries(amotion_demo PRIVATE amotion)
+endif()
+
+
+if (AMOTION_BUILD_TESTS)
+    enable_testing()
+    add_executable(amotion_core_test tests/core.cpp)
+    target_link_libraries(amotion_core_test PRIVATE amotion)
+    add_test(NAME amotion_core COMMAND amotion_core_test)
 endif()
