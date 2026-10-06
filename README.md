@@ -1,55 +1,66 @@
 # AMotion
 
-AMotion is the motion/runtime shell behind **AnchorMotion**.
+Native behavioural motion runtime for UI hosts.
 
-This repository starts deliberately small: a working host-contract plugin, not a finished product. The first goal is to make the interaction contour usable from any WebView-based desktop shell without coupling it to Electron, Tauri, Wails, NW.js or Neutralinojs.
+AMotion is not a product and not a JS animation library. It is the native core behind **AnchorMotion**: a small runtime that takes geometry, pointer input and surface rules, performs the heavy interaction math outside a WebView, and returns compact transform/state frames to the host.
+
+**Doctrine:** rigid geometry + viscous relationship.
+
+The object's identity and hull stay disciplined. Adhesion, weight, lag, docking, absorption and inertia live in the relationship between the object, pointer and surfaces.
 
 ## M0
 
-M0 provides:
+This first cut intentionally does only the reusable core:
 
-- one host-neutral motion engine;
-- one browser/WebView adapter;
-- rigid object geometry with viscous pointer/surface relationship;
-- click vs drag intent separation;
-- 300 ms hover affordance;
-- FREE / SOURCE / DOCK / EDGE / CORNER surface contracts;
-- Full / Reduced / Off motion policy;
-- canonical transform state hand-off through callbacks;
-- no product/business logic.
+- C++20 native runtime;
+- stable C ABI;
+- body + surface registry;
+- pointer intent and click-vs-drag threshold;
+- 300 ms hover affordance state;
+- FREE / SOURCE / DOCK / EDGE / CORNER contracts;
+- viscous follow and settle;
+- canonical geometry transition on commit;
+- Full / Reduced / Off;
+- compact frame output + semantic event queue.
 
-A host owns persistence, commands, permissions and side effects. AMotion only owns interaction and motion.
+The host owns DOM/native rendering, business actions, persistence, permissions and product state.
 
-## Quick start
+## Build
 
-```ts
-import { createAMotion, createWebHost } from "@innvoices/amotion";
-
-const host = createWebHost(document);
-const motion = createAMotion(host, { policy: "full" });
-
-motion.registerSurface(document.querySelector("#source")!, {
-  id: "source",
-  contract: "source",
-});
-
-motion.attach(document.querySelector("#sticker")!, {
-  id: "sticker",
-  hoverDwellMs: 300,
-  dragThresholdPx: 7,
-  onClick: () => console.log("launch intent"),
-  onCommit: (result) => console.log(result),
-});
+```bash
+cmake -S . -B build
+cmake --build build --config Release
 ```
 
-## Doctrine
+Run the tiny native demo:
 
-**Rigid geometry + viscous relationship.**
+```bash
+./build/amotion_demo
+```
 
-The object's hull remains disciplined. Weight, adhesion, lag and surface tension live in the relationship between object, pointer and surface.
+On multi-config generators (Visual Studio):
 
-## Status
+```powershell
+.\build\Release\amotion_demo.exe
+```
 
-M0 shell. Improve by replacing internals behind the same host contract instead of growing one-off host-specific motion systems.
+## Integration shape
 
-© 2026 INNVoices. All rights reserved.
+A WebView/Electron/Tauri/Wails/etc. adapter should be thin:
+
+```text
+pointer + geometry + surface rules
+              |
+              v
+         AMotion native
+              |
+              v
+     frame packet + events
+              |
+              v
+    CSS/native transforms
+```
+
+Do not put product logic into AMotion. Do not make the core know Electron, React, Anchor, launchers or server shortcuts.
+
+The next work is a real host adapter and richer rule solving behind this ABI.
