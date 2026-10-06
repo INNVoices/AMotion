@@ -13,8 +13,17 @@
       "defines": [
         "NAPI_CPP_EXCEPTIONS"
       ],
+      "cflags": [
+        "-std=c++20"
+      ],
+      "cflags!": [
+        "-fno-exceptions"
+      ],
       "cflags_cc": [
         "-std=c++20"
+      ],
+      "cflags_cc!": [
+        "-fno-exceptions"
       ],
       "xcode_settings": {
         "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
