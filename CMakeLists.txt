@@ -3,7 +3,7 @@ project(amotion LANGUAGES CXX)
 
 option(AMOTION_BUILD_EXAMPLES "Build AMotion examples" ON)
 
-add_library(amotion STATIC
+add_library(amotion SHARED
     src/amotion.cpp
 )
 
@@ -13,6 +13,7 @@ target_include_directories(amotion
 )
 
 target_compile_features(amotion PUBLIC cxx_std_20)
+target_compile_definitions(amotion PRIVATE AMOTION_BUILD)
 
 if (MSVC)
     target_compile_options(amotion PRIVATE /W4 /permissive-)
